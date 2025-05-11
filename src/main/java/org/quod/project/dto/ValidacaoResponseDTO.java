@@ -4,20 +4,8 @@ public class ValidacaoResponseDTO {
     private String usuarioId;
     private boolean valido;
     private boolean fraudeDetectada;
-    private String tipoBiometria; // "facial", "digital", "documento"
+    private String tipoBiometria;
     private String mensagem;
-
-    // Construtores
-    public ValidacaoResponseDTO() {
-    }
-
-    public ValidacaoResponseDTO(String usuarioId, boolean valido, boolean fraudeDetectada, String tipoBiometria, String mensagem) {
-        this.usuarioId = usuarioId;
-        this.valido = valido;
-        this.fraudeDetectada = fraudeDetectada;
-        this.tipoBiometria = tipoBiometria;
-        this.mensagem = mensagem;
-    }
 
     // Getters e Setters
     public String getUsuarioId() {

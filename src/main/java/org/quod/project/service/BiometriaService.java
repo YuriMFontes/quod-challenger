@@ -7,6 +7,8 @@ import org.quod.project.repository.ResultadoValidacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class BiometriaService {
 
@@ -22,37 +24,39 @@ public class BiometriaService {
     @Autowired
     private ValidadorImagemService validadorImagemService;
 
-    public ValidacaoResponseDTO validarBiometria(ImagemRequestDTO request) {
-        // Validação da imagem
+    public ValidacaoResponseDTO validarBiometria(ImagemRequestDTO request, String tipoBiometria) {
         boolean imagemValida = validadorImagemService.validarImagem(request.getImagemBase64());
+
         if (!imagemValida) {
             throw new RuntimeException("Imagem inválida. Verifique a qualidade da captura.");
         }
 
-        // Simulação de validação da biometria (facial ou digital)
-        boolean valido = true;  // Simulação de validação bem-sucedida (deve ser substituído pela validação real)
-        boolean fraudeDetectada = detectorFraudeService.detectarFraude(request.getImagemBase64());
+        boolean valido = true;
+        boolean fraudeDetectada = detectorFraudeService.detectarFraude(request.getNomeArquivo(), request.getTipoImagem());
 
-        // Resposta da validação
         ValidacaoResponseDTO response = new ValidacaoResponseDTO();
+        response.setUsuarioId(request.getUsuarioId());
         response.setValido(valido);
         response.setFraudeDetectada(fraudeDetectada);
+        response.setTipoBiometria(tipoBiometria);
         response.setMensagem(fraudeDetectada ? "Fraude detectada" : "Validação bem-sucedida");
 
-        // Salvar o resultado da validação no banco de dados
         ResultadoValidacao resultado = new ResultadoValidacao();
         resultado.setUsuarioId(request.getUsuarioId());
         resultado.setTipoImagem(request.getTipoImagem());
-        resultado.setValido(valido);
-        resultado.setFraudeDetectada(fraudeDetectada);
-        resultado.setMensagem(response.getMensagem());
         resultado.setImagemBase64(request.getImagemBase64());
+        resultado.setSucesso(valido);
+        resultado.setFraudeDetectada(fraudeDetectada);
+        resultado.setTipo(tipoBiometria);
+        resultado.setMensagem(response.getMensagem());
+        resultado.setData(LocalDateTime.now());
 
         resultadoValidacaoRepository.save(resultado);
 
-        // Se fraude for detectada, envia notificação
         if (fraudeDetectada) {
-            notificacaoService.enviarNotificacaoDeFraude(request.getUsuarioId(), "Fraude detectada na biometria.");
+            notificacaoService.notificarFraude(response);
+        } else {
+            notificacaoService.notificarSucesso(response);
         }
 
         return response;

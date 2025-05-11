@@ -2,7 +2,7 @@ package com.seuprojeto.controller;
 
 import org.quod.project.dto.ImagemRequestDTO;
 import org.quod.project.dto.ValidacaoResponseDTO;
-import org.quod.project.dto.BiometriaService;
+import org.quod.project.service.BiometriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
