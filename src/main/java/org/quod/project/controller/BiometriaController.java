@@ -1,4 +1,4 @@
-package com.seuprojeto.controller;
+package org.quod.project.controller;
 
 import org.quod.project.dto.ImagemRequestDTO;
 import org.quod.project.dto.ValidacaoResponseDTO;
